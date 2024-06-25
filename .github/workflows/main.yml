@@ -29,6 +29,10 @@ jobs:
           python setup.py bdist_wheel
           rm -r build
           rm -r *.egg-info
+          mkdir -p ~/.ssh/
+          mkdir -p /home/runner/work/wechat_articles_spider/wechat_articles_spider/whl/
+          mv dist/*.whl /home/runner/work/wechat_articles_spider/wechat_articles_spider/whl/
+          rm -r dist
 
       - name: Submit code to repository
         run: |
@@ -37,5 +41,5 @@ jobs:
 
          git add .
          git commit -m 'update'
-         git push origin main
+         git push
 
