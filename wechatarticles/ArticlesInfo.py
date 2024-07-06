@@ -23,7 +23,8 @@ class ArticlesInfo(object):
         self.s.trust_env = False
         self.appmsg_token = appmsg_token
         self.headers = {
-            "User-Agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0Chrome/57.0.2987.132 MQQBrowser/6.2 Mobile",
+            "User-Agent":
+            "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0Chrome/57.0.2987.132 MQQBrowser/6.2 Mobile",
             "Cookie": cookie,
         }
         self.data = {
@@ -72,7 +73,7 @@ class ArticlesInfo(object):
         except Exception:
             raise Exception("params is error, please check your article_url")
 
-    def comments(self, article_url):
+    def comments(self, article_url, comment_id=""):
         """
         获取文章评论
 
@@ -123,9 +124,10 @@ class ArticlesInfo(object):
         __biz, _, idx, _ = self.__get_params(article_url)
         getcomment_url = "https://mp.weixin.qq.com/mp/appmsg_comment?action=getcomment&__biz={}&idx={}&comment_id={}&limit=100"
         try:
-            comment_id = self.__get_comment_id(article_url)
             if comment_id == "":
-                return {}
+                comment_id = self.__get_comment_id(article_url)
+                if comment_id == "":
+                    return {}
             url = getcomment_url.format(__biz, idx, comment_id)
             return self.s.get(url, headers=self.headers, proxies=self.proxies).json()
         except Exception as e:
@@ -174,7 +176,7 @@ class ArticlesInfo(object):
         self.__verify_url(article_url)
         # 切分url, 提取相应的参数
         string_lst = article_url.split("?")[1].split("&")
-        dict_value = [string[string.index("=") + 1 :] for string in string_lst]
+        dict_value = [string[string.index("=") + 1:] for string in string_lst]
         __biz, mid, idx, sn, *_ = dict_value
         sn = sn[:-3] if sn[-3] == "#" else sn
 
@@ -220,9 +222,10 @@ class ArticlesInfo(object):
 
         # appmsgext_url = origin_url + "__biz={}&mid={}&sn={}&idx={}&appmsg_token={}&x5=1".format(
         #     __biz, mid, sn, idx, self.appmsg_token)
-        appmsgext_json = requests.post(
-            appmsgext_url, headers=self.headers, data=self.data, proxies=self.proxies
-        ).json()
+        appmsgext_json = requests.post(appmsgext_url,
+                                       headers=self.headers,
+                                       data=self.data,
+                                       proxies=self.proxies).json()
 
         if "appmsgstat" not in appmsgext_json.keys():
             raise Exception("get info error, please check your cookie and appmsg_token")
@@ -310,34 +313,22 @@ class ArticlesInfo(object):
         if 'ct = "' in html_text:
             timestamp = int(html_text.split('ct = "')[1].split('";')[0].strip())
         else:
-            timestamp = (
-                html_text.split("ct = ")[1].split("|| '")[1].split("'")[0].strip()
-            )
+            timestamp = (html_text.split("ct = ")[1].split("|| '")[1].split("'")[0].strip())
             timestamp = int(timestamp) if timestamp != "" else 0
 
         if "copyright" in html_text:
             if '_copyright_stat = "' in html_text:
                 copyright_stat = int(
-                    html_text.split('_copyright_stat = "')[1].split('";')[0].strip()
-                )
+                    html_text.split('_copyright_stat = "')[1].split('";')[0].strip())
             else:
                 copyright_stat = (
-                    html_text.split("copyright_stat =")[1]
-                    .split("|| '")[1]
-                    .split("'")[0]
-                    .strip()
-                )
+                    html_text.split("copyright_stat =")[1].split("|| '")[1].split("'")[0].strip())
                 copyright_stat = int(copyright_stat) if copyright_stat != "" else 0
         else:
             copyright_stat = 0
 
         if "nick_name = " in html_text:
-            nickname = (
-                html_text.split("nick_name = ")[1]
-                .split("|| '")[1]
-                .split("'")[0]
-                .strip()
-            )
+            nickname = (html_text.split("nick_name = ")[1].split("|| '")[1].split("'")[0].strip())
         else:
             nickname = html_text.split('nickname = "')[1].split('";')[0].strip()
 

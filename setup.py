@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="wechatarticles",
-    version="0.7.1",
+    version="0.7.1.1",
     author="wnma3mz",
     author_email="wnma3mz@gmail.com",
     description="wechat articles scrapy",
